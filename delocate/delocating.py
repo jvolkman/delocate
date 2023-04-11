@@ -11,6 +11,7 @@ import warnings
 from os.path import abspath, basename, dirname, exists
 from os.path import join as pjoin
 from os.path import realpath, relpath
+from pathlib import Path
 from subprocess import PIPE, Popen
 from typing import (
     Callable,
@@ -137,7 +138,7 @@ def _analyze_tree_libs(
             # @rpath, etc, at this point should never happen.
             raise DelocationError("%s was expected to be resolved." % required)
         r_ed_base = basename(required)
-        if relpath(required, rp_root_path).startswith(".."):
+        if Path(rp_root_path) not in Path(required).parents:
             # Not local, plan to copy
             if r_ed_base in copied_basenames:
                 raise DelocationError(
@@ -382,6 +383,8 @@ def _dylibs_only(filename: str) -> bool:
 
 
 def filter_system_libs(libname: str) -> bool:
+    _, libname = os.path.splitdrive(libname)
+    libname = Path(libname).as_posix()
     return not (libname.startswith("/usr/lib") or libname.startswith("/System"))
 
 

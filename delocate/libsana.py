@@ -10,6 +10,7 @@ import warnings
 from os.path import basename, dirname
 from os.path import join as pjoin
 from os.path import realpath
+from pathlib import Path
 from typing import (
     Callable,
     Dict,
@@ -42,6 +43,8 @@ class DependencyNotFound(Exception):
 
 
 def _filter_system_libs(libname: Text) -> bool:
+    _, libname = os.path.splitdrive(libname)
+    libname = Path(libname).as_posix()
     return not (libname.startswith("/usr/lib") or libname.startswith("/System"))
 
 
