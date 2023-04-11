@@ -23,8 +23,8 @@ from os.path import expanduser
 from os.path import join as exists
 from os.path import realpath
 
-from delocate import __version__
-from delocate.wheeltools import WheelToolsError, add_platforms
+from .. import __version__
+from ..wheeltools import WheelToolsError, add_platforms
 
 
 def main():

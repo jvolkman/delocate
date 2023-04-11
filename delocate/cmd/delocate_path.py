@@ -8,7 +8,7 @@ import os
 import sys
 from optparse import Option, OptionParser
 
-from delocate import __version__, delocate_path
+from .. import __version__, delocate_path
 
 
 def main():

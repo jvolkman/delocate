@@ -11,8 +11,8 @@ from optparse import Option, OptionParser
 from os.path import abspath, basename, expanduser
 from os.path import join as pjoin
 
-from delocate import __version__
-from delocate.fuse import fuse_wheels
+from .. import __version__
+from ..fuse import fuse_wheels
 
 
 def main():

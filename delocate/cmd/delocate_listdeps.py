@@ -10,9 +10,9 @@ from os import getcwd
 from os.path import isdir, realpath
 from os.path import sep as psep
 
-from delocate import __version__, wheel_libs
-from delocate.delocating import filter_system_libs
-from delocate.libsana import stripped_lib_dict, tree_libs_from_directory
+from .. import __version__, wheel_libs
+from ..delocating import filter_system_libs
+from ..libsana import stripped_lib_dict, tree_libs_from_directory
 
 
 def main():

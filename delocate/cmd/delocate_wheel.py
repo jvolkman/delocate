@@ -14,7 +14,7 @@ from os.path import basename, exists, expanduser
 from os.path import join as pjoin
 from typing import List, Optional, Text
 
-from delocate import __version__, delocate_wheel
+from .. import __version__, delocate_wheel
 
 
 def main() -> None:

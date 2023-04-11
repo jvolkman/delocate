@@ -12,7 +12,7 @@ from optparse import Option, OptionParser
 from os.path import basename, exists, expanduser
 from os.path import join as pjoin
 
-from delocate import __version__, patch_wheel
+from .. import __version__, patch_wheel
 
 
 def main():
