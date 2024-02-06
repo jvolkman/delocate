@@ -9,6 +9,7 @@ import sys
 import warnings
 from os.path import basename, dirname, realpath
 from os.path import join as pjoin
+from pathlib import Path
 from typing import (
     Callable,
     Dict,
@@ -19,6 +20,7 @@ from typing import (
     Set,
     Text,
     Tuple,
+    Union,
 )
 
 from .tmpdirs import TemporaryDirectory
@@ -40,8 +42,18 @@ class DependencyNotFound(Exception):
     """Raised by tree_libs or resolve_rpath if an expected dependency is missing."""  # noqa: E501
 
 
-def _filter_system_libs(libname: Text) -> bool:
-    return not (libname.startswith("/usr/lib") or libname.startswith("/System"))
+def is_resolved_subpath(
+    path: Union[str, os.PathLike],
+    base: Union[str, os.PathLike],
+) -> bool:
+    return Path(base).resolve() in Path(path).resolve().parents
+
+
+def filter_system_libs(libname: Union[str, os.PathLike]) -> bool:
+    """Return True if libname starts with /System or /usr/lib."""
+    return not any(
+        is_resolved_subpath(libname, base) for base in ["/usr/lib", "/System"]
+    )
 
 
 def get_dependencies(
@@ -91,7 +103,7 @@ def get_dependencies(
         logger.debug("Ignoring dependencies of %s" % lib_fname)
         return
     if not os.path.isfile(lib_fname):
-        if not _filter_system_libs(lib_fname):
+        if not filter_system_libs(lib_fname):
             logger.debug(
                 "Ignoring missing library %s because it is a system library.",
                 lib_fname,
@@ -111,7 +123,7 @@ def get_dependencies(
             else:
                 dependency_path = search_environment_for_lib(install_name)
             if not os.path.isfile(dependency_path):
-                if not _filter_system_libs(dependency_path):
+                if not filter_system_libs(dependency_path):
                     logger.debug(
                         "Skipped missing dependency %s"
                         " because it is a system library.",
@@ -325,7 +337,7 @@ def _tree_libs_from_libraries(
 def tree_libs_from_directory(
     start_path: str,
     *,
-    lib_filt_func: Callable[[str], bool] = _filter_system_libs,
+    lib_filt_func: Callable[[str], bool] = filter_system_libs,
     copy_filt_func: Callable[[str], bool] = lambda path: True,
     executable_path: Optional[str] = None,
     ignore_missing: bool = False,
@@ -755,7 +767,7 @@ def wheel_libs(
         When dependencies can not be located and `ignore_missing` is False.
     """
     if filt_func is None:
-        filt_func = _filter_system_libs
+        filt_func = filter_system_libs
     with TemporaryDirectory() as tmpdir:
         zip2dir(wheel_fname, tmpdir)
         lib_dict = tree_libs_from_directory(
