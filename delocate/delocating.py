@@ -862,7 +862,7 @@ def _update_wheelfile(wheel_dir: Path, wheel_name: str) -> None:
     (file_path,) = wheel_dir.glob("*.dist-info/WHEEL")
     with file_path.open(encoding="utf-8") as f:
         lines = f.readlines()
-    with file_path.open("w", encoding="utf-8") as f:
+    with file_path.open("w", encoding="utf-8", newline="\n") as f:
         for line in lines:
             if line.startswith("Tag:"):
                 f.write(f"Tag: {'.'.join(str(x) for x in platform_tag_set)}\n")
